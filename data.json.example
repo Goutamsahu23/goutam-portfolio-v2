@@ -1,0 +1,92 @@
+{
+  "personal": {
+    "name": "Your Name",
+    "title": "Your Title",
+    "badge": "👋 Welcome",
+    "description": "Your description here",
+    "location": "Your City, Country",
+    "email": "your.email@example.com",
+    "phone": "+1 (234) 567-8900"
+  },
+  "socialLinks": [
+    {
+      "name": "GitHub",
+      "icon": "FaGithub",
+      "href": "https://github.com/yourusername"
+    },
+    {
+      "name": "LinkedIn",
+      "icon": "FaLinkedin",
+      "href": "https://linkedin.com/in/yourusername"
+    },
+    {
+      "name": "Twitter",
+      "icon": "FaTwitter",
+      "href": "https://twitter.com/yourusername"
+    },
+    {
+      "name": "Email",
+      "icon": "FaEnvelope",
+      "href": "mailto:your.email@example.com"
+    }
+  ],
+  "stats": {
+    "projects": 0,
+    "experience": 0,
+    "satisfaction": 100
+  },
+  "about": {
+    "description": [
+      "Your first paragraph description here.",
+      "Your second paragraph description here."
+    ],
+    "features": [
+      {
+        "title": "Clean Code",
+        "icon": "FaCode",
+        "description": "Writing maintainable and scalable code following best practices."
+      },
+      {
+        "title": "Fast Performance",
+        "icon": "FaRocket",
+        "description": "Optimized applications that load quickly and run smoothly."
+      },
+      {
+        "title": "Passionate",
+        "icon": "FaHeart",
+        "description": "Love what I do and always eager to learn new technologies."
+      }
+    ]
+  },
+  "skills": [
+    {
+      "category": "Frontend",
+      "skills": [
+        { "name": "React", "icon": "FaReact", "level": 90 },
+        { "name": "JavaScript", "icon": "FaJs", "level": 85 }
+      ]
+    }
+  ],
+  "experience": [
+    {
+      "title": "Your Job Title",
+      "company": "Company Name",
+      "location": "Location",
+      "period": "2020 - Present",
+      "description": "Your job description here.",
+      "technologies": ["React", "Node.js"],
+      "type": "Full-time"
+    }
+  ],
+  "projects": [
+    {
+      "title": "Project Name",
+      "description": "Project description here.",
+      "technologies": ["React", "Node.js"],
+      "image": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800",
+      "github": "https://github.com",
+      "demo": "https://example.com",
+      "featured": true
+    }
+  ]
+}
