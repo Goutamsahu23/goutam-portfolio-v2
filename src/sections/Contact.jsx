@@ -26,10 +26,6 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState({ type: null, message: '' })
 
-  const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID'
-  const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID'
-  const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY'
-
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value })
   }
@@ -40,28 +36,25 @@ export default function Contact() {
     setSubmitStatus({ type: null, message: '' })
 
     try {
-      // Imported on submit: the SDK is dead weight for the 99% of visitors who
-      // never send anything.
-      const { default: emailjs } = await import('@emailjs/browser')
-      emailjs.init(EMAILJS_PUBLIC_KEY)
-
-      const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-        from_name: formData.name,
-        from_email: formData.email,
-        subject: formData.subject,
-        message: formData.message,
-        to_email: personal.email,
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       })
 
-      if (result.text === 'OK') {
+      const result = await response.json().catch(() => ({}))
+
+      if (response.ok && result.ok) {
         setSubmitStatus({
           type: 'success',
           message: 'Thank you for your message! I will get back to you soon.',
         })
         setFormData({ name: '', email: '', subject: '', message: '' })
+      } else {
+        throw new Error(result.error || 'Request failed')
       }
     } catch (error) {
-      console.error('EmailJS Error:', error)
+      console.error('Contact form error:', error)
       setSubmitStatus({
         type: 'error',
         message:

@@ -11,19 +11,23 @@ const __dirname = path.dirname(__filename);
 const dataPath = path.join(__dirname, '..', 'data.json');
 const examplePath = path.join(__dirname, '..', 'data.json.example');
 
-let portfolioData;
+// Vercel/CI always regenerates from env vars. Locally, keep data.json when developing.
+const isRemoteBuild =
+  process.env.VERCEL === '1' ||
+  process.env.CI === 'true' ||
+  process.env.NODE_ENV === 'production';
 
-// Check if we should use local data.json (for development)
-const useLocalData = fs.existsSync(dataPath) && process.env.NODE_ENV !== 'production';
+const useLocalData = fs.existsSync(dataPath) && !isRemoteBuild;
 
 if (useLocalData) {
-  // Use existing data.json in development
   console.log('📝 Using existing data.json for local development');
   process.exit(0);
 }
 
-// Otherwise, generate from environment variables or example
 console.log('🔧 Generating data.json from environment variables...');
+console.log(`   (VERCEL=${process.env.VERCEL ?? 'unset'}, NODE_ENV=${process.env.NODE_ENV ?? 'unset'})`);
+
+let portfolioData;
 
 // Start with example data as base
 portfolioData = JSON.parse(fs.readFileSync(examplePath, 'utf-8'));

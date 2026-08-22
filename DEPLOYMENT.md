@@ -30,7 +30,21 @@ npm run export-env          # one readable block per variable
 npm run export-env -- --env # dotenv-style, one line per variable
 ```
 
-### Step 2: Set Environment Variables in Hosting Platform
+### Step 2: Set mail variables (contact form)
+
+Add these in Vercel → **Settings → Environment Variables**. They are **server-only** (no `VITE_` prefix) so they never ship to the browser:
+
+| Key | Example |
+|-----|---------|
+| `MAIL_HOST` | `smtp.gmail.com` |
+| `MAIL_PORT` | `587` |
+| `MAIL_USER` | `your@gmail.com` |
+| `MAIL_PASS` | Gmail **App Password** (not your login password) |
+| `EMAIL` | `your@gmail.com` (where form messages are delivered) |
+
+For local dev, copy `.env.example` to `.env` and fill in the same values.
+
+### Step 3: Set portfolio variables
 
 **For Vercel/Netlify**, go to your project settings → Environment Variables and add:
 
