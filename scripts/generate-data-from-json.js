@@ -34,7 +34,7 @@ const parseEnvJson = (key, defaultValue) => {
   if (!value) return defaultValue;
   try {
     return JSON.parse(value);
-  } catch (e) {
+  } catch {
     console.warn(`⚠️  Invalid JSON for ${key}, using default`);
     return defaultValue;
   }
@@ -95,6 +95,18 @@ if (process.env.VITE_EXPERIENCE) {
 
 if (process.env.VITE_PROJECTS) {
   portfolioData.projects = parseEnvJson('VITE_PROJECTS', portfolioData.projects);
+}
+
+if (process.env.VITE_EDUCATION) {
+  portfolioData.education = parseEnvJson('VITE_EDUCATION', portfolioData.education);
+}
+
+if (process.env.VITE_CERTIFICATIONS) {
+  portfolioData.certifications = parseEnvJson('VITE_CERTIFICATIONS', portfolioData.certifications);
+}
+
+if (process.env.VITE_LANGUAGES) {
+  portfolioData.languages = parseEnvJson('VITE_LANGUAGES', portfolioData.languages);
 }
 
 // Write the generated data.json

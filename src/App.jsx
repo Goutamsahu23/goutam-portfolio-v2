@@ -1,30 +1,45 @@
-import Navbar from './components/Navbar';
-import Hero from './sections/Hero';
-import About from './sections/About';
-import Skills from './sections/Skills';
-import Experience from './sections/Experience';
-import Projects from './sections/Projects';
-import Contact from './sections/Contact';
-import './App.css';
+import { useState } from 'react'
+import portfolioData from '../data.json'
+import Grain from './components/chrome/Grain'
+import Cursor from './components/chrome/Cursor'
+import ScrollProgress from './components/chrome/ScrollProgress'
+import Preloader from './components/chrome/Preloader'
+import Nav from './components/chrome/Nav'
+import Footer from './components/chrome/Footer'
+import Hero from './sections/Hero'
+import Statement from './sections/Statement'
+import Work from './sections/Work'
+import Trajectory from './sections/Trajectory'
+import Stack from './sections/Stack'
+import Credentials from './sections/Credentials'
+import Contact from './sections/Contact'
 
 function App() {
+  // The hero holds its reveal until the cold open has lifted, so the two moves
+  // read as one.
+  const [introDone, setIntroDone] = useState(false)
+
   return (
-    <div className="App">
-      <Navbar />
+    <>
+      <Grain />
+      <Cursor />
+      <ScrollProgress />
+      <Preloader name={portfolioData.personal.name} onComplete={() => setIntroDone(true)} />
+      <Nav ready={introDone} />
+
       <main>
-        <Hero />
-        <About />
-        <Skills />
-        <Experience />
-        <Projects />
+        <Hero introDone={introDone} />
+        <Statement />
+        <Stack />
+        <Trajectory />
+        <Work />
+        <Credentials />
         <Contact />
       </main>
-      <footer className="footer">
-        <p>&copy; {new Date().getFullYear()} Goutam. All rights reserved.</p>
-        <p>Built with React & Framer Motion</p>
-      </footer>
-    </div>
-  );
+
+      <Footer />
+    </>
+  )
 }
 
-export default App;
+export default App

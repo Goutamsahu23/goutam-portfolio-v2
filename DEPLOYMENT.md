@@ -22,7 +22,13 @@ This portfolio uses environment variables to protect your personal data while al
 
 ### Step 1: Prepare Your Data
 
-Copy your real `data.json` content and prepare it for environment variables.
+Run the export script to print every environment variable value straight from your
+local `data.json` — no manual copy/paste of JSON fragments needed:
+
+```bash
+npm run export-env          # one readable block per variable
+npm run export-env -- --env # dotenv-style, one line per variable
+```
 
 ### Step 2: Set Environment Variables in Hosting Platform
 
@@ -62,6 +68,12 @@ Copy your real `data.json` content and prepare it for environment variables.
 **VITE_EXPERIENCE** (copy your entire experience array from data.json)
 
 **VITE_PROJECTS** (copy your entire projects array from data.json)
+
+**VITE_EDUCATION** (copy your entire education array from data.json)
+
+**VITE_CERTIFICATIONS** (copy your entire certifications array from data.json)
+
+**VITE_LANGUAGES** (copy your languages array from data.json)
 
 ### Step 3: Deploy
 

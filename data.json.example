@@ -74,14 +74,39 @@
       "location": "Location",
       "period": "2020 - Present",
       "description": "Your job description here.",
+      "highlights": [
+        "Optional bullet point describing an achievement.",
+        "Remove or omit this array to show only the description."
+      ],
       "technologies": ["React", "Node.js"],
       "type": "Full-time"
     }
   ],
+  "education": [
+    {
+      "degree": "Your Degree, Branch",
+      "institution": "Your University",
+      "location": "City, State",
+      "period": "2019 - 2023",
+      "grade": "CGPA 0.00"
+    }
+  ],
+  "certifications": [
+    {
+      "title": "Certification Name",
+      "issuer": "Issuing Organization",
+      "year": "2024"
+    }
+  ],
+  "languages": ["English"],
   "projects": [
     {
       "title": "Project Name",
       "description": "Project description here.",
+      "highlights": [
+        "Optional bullet point describing a technical detail.",
+        "Omit this array to show only the description."
+      ],
       "technologies": ["React", "Node.js"],
       "image": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800",
       "github": "https://github.com",

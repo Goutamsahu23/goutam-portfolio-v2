@@ -1,206 +1,175 @@
-import { useState } from 'react';
-import { useInView } from 'react-intersection-observer';
-import { motion } from 'framer-motion';
-import { FaEnvelope, FaPhone, FaMapMarkerAlt, FaPaperPlane } from 'react-icons/fa';
-import emailjs from '@emailjs/browser';
-import portfolioData from '../../data.json';
-import './Contact.css';
+import { useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import portfolioData from '../../data.json'
+import Section from '../components/primitives/Section'
+import SectionHead from '../components/primitives/SectionHead'
+import RevealText from '../components/primitives/RevealText'
+import Reveal from '../components/primitives/Reveal'
+import MagneticButton from '../components/primitives/MagneticButton'
+import { transition } from '../lib/motion'
+import { SECTIONS } from '../lib/sections'
 
-const Contact = () => {
-  const [ref, inView] = useInView({
-    threshold: 0.1,
-    triggerOnce: true,
-  });
+const meta = SECTIONS.find((section) => section.id === 'contact')
 
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: '',
-  });
+const FIELD =
+  'w-full border-b border-b-ink/25 bg-transparent py-4 text-ink placeholder:text-ink/60 focus:border-b-ink focus:outline-none transition-colors duration-300 ease-(--ease-snap)'
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState({ type: null, message: '' });
+/**
+ * 06 — Contact. The section inverts to paper: the last thing on the page should
+ * not look like the rest of it. The address is the primary element and the form
+ * is the fallback for people who would rather type here.
+ */
+export default function Contact() {
+  const { personal, socialLinks } = portfolioData
 
-  // EmailJS configuration - Replace these with your EmailJS credentials
-  const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID';
-  const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID';
-  const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY';
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState({ type: null, message: '' })
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'YOUR_SERVICE_ID'
+  const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'YOUR_TEMPLATE_ID'
+  const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'YOUR_PUBLIC_KEY'
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus({ type: null, message: '' });
-    
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value })
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setIsSubmitting(true)
+    setSubmitStatus({ type: null, message: '' })
+
     try {
-      // Initialize EmailJS with your public key
-      emailjs.init(EMAILJS_PUBLIC_KEY);
-      
-      // Send email using EmailJS
-      const result = await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          subject: formData.subject,
-          message: formData.message,
-          to_email: portfolioData.personal.email,
-        }
-      );
-      
+      // Imported on submit: the SDK is dead weight for the 99% of visitors who
+      // never send anything.
+      const { default: emailjs } = await import('@emailjs/browser')
+      emailjs.init(EMAILJS_PUBLIC_KEY)
+
+      const result = await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name: formData.name,
+        from_email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        to_email: personal.email,
+      })
+
       if (result.text === 'OK') {
         setSubmitStatus({
           type: 'success',
           message: 'Thank you for your message! I will get back to you soon.',
-        });
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        })
+        setFormData({ name: '', email: '', subject: '', message: '' })
       }
     } catch (error) {
-      console.error('EmailJS Error:', error);
+      console.error('EmailJS Error:', error)
       setSubmitStatus({
         type: 'error',
-        message: 'Sorry, there was an error sending your message. Please try again or contact me directly via email.',
-      });
+        message:
+          'Sorry, there was an error sending your message. Please try again or contact me directly via email.',
+      })
     } finally {
-      setIsSubmitting(false);
-      // Clear status message after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus({ type: null, message: '' });
-      }, 5000);
+      setIsSubmitting(false)
+      setTimeout(() => setSubmitStatus({ type: null, message: '' }), 5000)
     }
-  };
-
-  const contactInfo = [
-    {
-      icon: FaEnvelope,
-      title: 'Email',
-      value: portfolioData.personal.email,
-      link: `mailto:${portfolioData.personal.email}`,
-    },
-    {
-      icon: FaPhone,
-      title: 'Phone',
-      value: portfolioData.personal.phone,
-      link: `tel:${portfolioData.personal.phone.replace(/\s/g, '')}`,
-    },
-    {
-      icon: FaMapMarkerAlt,
-      title: 'Location',
-      value: portfolioData.personal.location,
-      link: '#',
-    },
-  ];
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 50 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.6,
-        ease: 'easeOut',
-      },
-    },
-  };
+  }
 
   return (
-    <section id="contact" className="contact" ref={ref}>
-      <div className="container">
-        <motion.div
-          className="contact-header"
-          variants={containerVariants}
-          initial="hidden"
-          animate={inView ? 'visible' : 'hidden'}
-        >
-          <motion.h2 className="section-title" variants={itemVariants}>
-            Get In <span className="gradient-text">Touch</span>
-          </motion.h2>
-          <motion.p className="section-subtitle" variants={itemVariants}>
-            Let's work together on your next project
-          </motion.p>
-        </motion.div>
+    <Section id="contact" tone="bone">
+      <div className="shell">
+        <SectionHead
+          index={meta.index}
+          label={meta.label}
+          tone="bone"
+          meta={personal.location}
+          className="mb-(--spacing-section)"
+        />
 
-        <div className="contact-content">
-          <motion.div
-            className="contact-info"
-            variants={containerVariants}
-            initial="hidden"
-            animate={inView ? 'visible' : 'hidden'}
-          >
-            <motion.h3 variants={itemVariants}>Contact Information</motion.h3>
-            <motion.p variants={itemVariants} className="contact-description">
-              Feel free to reach out if you're looking for a developer, have a question,
-              or just want to connect.
-            </motion.p>
+        <div className="grid grid-cols-12 gap-x-6 gap-y-20">
+          <div className="col-span-12 lg:col-span-7">
+            <RevealText as="p" type="words" className="font-display text-pull text-ink/70 max-w-[24ch]">
+              Open to engineering roles and collaborations. The fastest way to reach me is email.
+            </RevealText>
 
-            <div className="contact-items">
-              {contactInfo.map((info, index) => (
-                <motion.a
-                  key={index}
-                  href={info.link}
-                  className="contact-item"
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.05, x: 10 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                >
-                  <div className="contact-icon">
-                    <info.icon />
-                  </div>
-                  <div className="contact-details">
-                    <h4>{info.title}</h4>
-                    <p>{info.value}</p>
-                  </div>
-                </motion.a>
-              ))}
-            </div>
-          </motion.div>
+            <a
+              href={`mailto:${personal.email}`}
+              data-cursor="link"
+              data-cursor-label="Write"
+              className="group mt-12 inline-block max-w-full"
+            >
+              <span className="font-display text-title text-ink block leading-none break-words">
+                {personal.email}
+              </span>
+              <span
+                aria-hidden
+                className="bg-ink mt-3 block h-px origin-left scale-x-0 transition-transform duration-700 ease-(--ease-signal) group-hover:scale-x-100"
+              />
+            </a>
 
-          <motion.form
-            className="contact-form"
-            onSubmit={handleSubmit}
-            variants={itemVariants}
-            initial="hidden"
-            animate={inView ? 'visible' : 'hidden'}
-          >
-            <div className="form-group">
+            <dl className="mt-16 grid grid-cols-2 gap-8 sm:grid-cols-3">
+              {personal.phone ? (
+                <div>
+                  <dt className="label text-ink/70">Phone</dt>
+                  <dd className="mt-2">
+                    <a
+                      href={`tel:${personal.phone.replace(/\s/g, '')}`}
+                      data-cursor="link"
+                      className="text-ink/80 hover:text-ink transition-colors duration-300 ease-(--ease-snap)"
+                    >
+                      {personal.phone}
+                    </a>
+                  </dd>
+                </div>
+              ) : null}
+              <div>
+                <dt className="label text-ink/70">Based in</dt>
+                <dd className="text-ink/80 mt-2">{personal.location}</dd>
+              </div>
+              <div>
+                <dt className="label text-ink/70">Elsewhere</dt>
+                <dd className="mt-2 flex flex-col gap-1">
+                  {socialLinks
+                    .filter((link) => link.name !== 'Email')
+                    .map((link) => (
+                      <a
+                        key={link.name}
+                        href={link.href}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                        data-cursor="link"
+                        className="text-ink/80 hover:text-ink transition-colors duration-300 ease-(--ease-snap)"
+                      >
+                        {link.name} &#8599;
+                      </a>
+                    ))}
+                </dd>
+              </div>
+            </dl>
+          </div>
+
+          <Reveal className="col-span-12 lg:col-span-4 lg:col-start-9">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+              <p className="label text-ink/70 mb-6">Or send a note</p>
+
               <input
                 type="text"
                 name="name"
-                placeholder="Your Name"
+                placeholder="Name"
                 value={formData.name}
                 onChange={handleChange}
                 required
+                data-cursor="text"
+                className={FIELD}
               />
-            </div>
-            <div className="form-group">
               <input
                 type="email"
                 name="email"
-                placeholder="Your Email"
+                placeholder="Email"
                 value={formData.email}
                 onChange={handleChange}
                 required
+                data-cursor="text"
+                className={FIELD}
               />
-            </div>
-            <div className="form-group">
               <input
                 type="text"
                 name="subject"
@@ -208,43 +177,49 @@ const Contact = () => {
                 value={formData.subject}
                 onChange={handleChange}
                 required
+                data-cursor="text"
+                className={FIELD}
               />
-            </div>
-            <div className="form-group">
               <textarea
                 name="message"
-                placeholder="Your Message"
-                rows="6"
+                placeholder="Message"
+                rows="4"
                 value={formData.message}
                 onChange={handleChange}
                 required
+                data-cursor="text"
+                className={`${FIELD} resize-none`}
               />
-            </div>
-            <motion.button
-              type="submit"
-              className="submit-btn"
-              disabled={isSubmitting}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isSubmitting ? 'Sending...' : 'Send Message'}
-              <FaPaperPlane />
-            </motion.button>
-            
-            {submitStatus.message && (
-              <motion.div
-                className={`submit-status ${submitStatus.type}`}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
+
+              <MagneticButton
+                type="submit"
+                disabled={isSubmitting}
+                className="border-ink/30 hover:border-ink mt-8 self-start rounded-full border px-7 py-3 transition-colors duration-300 ease-(--ease-snap) disabled:opacity-40"
+                contentClassName="label text-ink"
               >
-                {submitStatus.message}
-              </motion.div>
-            )}
-          </motion.form>
+                {isSubmitting ? 'Sending' : 'Send'}
+              </MagneticButton>
+
+              <AnimatePresence>
+                {submitStatus.message ? (
+                  <motion.p
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={transition.fade}
+                    role="status"
+                    className={`mt-6 text-[0.9375rem] ${
+                      submitStatus.type === 'success' ? 'text-ink' : 'text-red-800'
+                    }`}
+                  >
+                    {submitStatus.message}
+                  </motion.p>
+                ) : null}
+              </AnimatePresence>
+            </form>
+          </Reveal>
         </div>
       </div>
-    </section>
-  );
-};
-
-export default Contact;
+    </Section>
+  )
+}
